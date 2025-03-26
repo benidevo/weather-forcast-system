@@ -1,0 +1,17 @@
+services:
+  weather-service:
+    build:
+      context: ..
+      dockerfile: infrastucture/docker/dev/weather-service/Dockerfile
+    container_name: weather-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - wfs-network
+    restart: unless-stopped
+
+networks:
+  wfs-network:
+    driver: bridge
