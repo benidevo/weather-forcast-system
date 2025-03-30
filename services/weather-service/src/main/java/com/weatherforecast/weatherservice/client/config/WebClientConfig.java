@@ -19,7 +19,7 @@ public class WebClientConfig {
     @Value("${openweathermap.api.key}")
     private String apiKey;
 
-    @Value("$(openweathermap.api.base-url)")
+    @Value("${openweathermap.api.base-url}")
     private String baseUrl;
 
     @Bean
