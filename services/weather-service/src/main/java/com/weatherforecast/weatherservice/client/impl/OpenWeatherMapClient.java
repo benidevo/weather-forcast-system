@@ -35,21 +35,22 @@ public class OpenWeatherMapClient implements WeatherApiClient {
     }
 
     @Override
-    public Mono<WeatherData> getWeatherData(String city) {
-        log.info("Fetching current weather for city: {}", city);
+    public Mono<WeatherData> getWeatherData(Double latitude, Double longitude) {
+        log.info("Fetching current weather for latitude: {} and longitude: {}", latitude, longitude);
 
         var weatherDataDto = webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/weather")
-                        .queryParam("q", city)
+                        .path("/data/3.0/onecall")
+                        .queryParam("lat", latitude)
+                        .queryParam("lon", longitude)
                         .queryParam("appid", apiKey)
                         .queryParam("units", "metric")
                         .build())
                 .retrieve()
                 .bodyToMono(WeatherDataDto.class)
                 .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
-                .doOnSuccess(result -> log.info("Successfully fetched current weather for: {}", city))
-                .doOnError(error -> log.error("Error fetching current weather for {}: {}", city, error.getMessage()));
+                .doOnSuccess(result -> log.info("Successfully fetched current weather for: {}", latitude, longitude))
+                .doOnError(error -> log.error("Error fetching current weather for {}: {}", latitude, longitude, error.getMessage()));
 
         return mapWeatherData(weatherDataDto);
     }

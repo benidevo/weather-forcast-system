@@ -5,12 +5,13 @@ import reactor.core.publisher.Mono;
 public interface WeatherApiClient {
 
     /**
-     * Retrieves current weather data for a specified city.
+     * Retrieves weather data for a specific geographic location.
      *
-     * @param city The name of the city to get weather data for
-     * @return A Mono containing the WeatherData response, or an error if the request fails
-     * @throws WebClientResponseException if there is an error with the HTTP request
-     * @throws IllegalArgumentException if the city parameter is null or empty
+     * @param latitude  The latitude coordinate of the location
+     * @param longitude The longitude coordinate of the location
+     * @return A Mono containing the WeatherData with current conditions, forecast and alerts
+     * @throws WebClientResponseException if there is an error calling the weather API
+     * @throws CircuitBreakerException if the circuit breaker is open due to too many failures
      */
-    Mono<WeatherData> getWeatherData(String city);
+    Mono<WeatherData> getWeatherData(Double latitude, Double longitude);
 }
