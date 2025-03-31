@@ -1,29 +1,19 @@
-FROM maven:3.9-eclipse-temurin-17 AS build
-WORKDIR /app
-
-COPY ./services/weather-service/.mvn/ ./.mvn/
-COPY ./services/weather-service/mvnw ./services/weather-service/pom.xml ./
-
-RUN ./mvnw dependency:go-offline -B
-
-COPY ./services/weather-service/src ./src
-
-RUN ./mvnw package -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
-
-FROM eclipse-temurin:17-jre
-
-RUN groupadd -r spring && useradd -r -g spring spring
-USER spring:spring
+FROM maven:3.9-eclipse-temurin-17
 
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar /app/app.jar
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV SPRING_PROFILES_ACTIVE=docker
+ENV SPRING_PROFILES_ACTIVE=dev
+ENV SPRING_DEVTOOLS_RESTART_ENABLED=true
+ENV SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-XX:TieredStopAtLevel=1 -Dspring.devtools.restart.enabled=true"]
 
-HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD wget --quiet --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl -f http://localhost:8080/actuator/health || exit 1
