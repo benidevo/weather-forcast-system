@@ -11,6 +11,8 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
       - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
+      - REDIS_PORT=6379
+      - REDIS_HOST=weather-service-cache
     env_file:
       - ../services/weather-service/.env
     volumes:
@@ -19,6 +21,27 @@ services:
     networks:
       - wfs-network
     restart: unless-stopped
+    depends_on:
+      - weather-service-cache
+
+  weather-service-cache:
+    image: redis:8.0-M04-alpine3.21
+    container_name: weather-service-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - wfs-network
+    restart: unless-stopped
+    volumes:
+      - weather-service-cache:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  weather-service-cache:
 
 networks:
   wfs-network:

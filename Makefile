@@ -1,6 +1,9 @@
 build:
 	docker compose -f infrastucture/docker-compose.yaml build
 
+build-no-cache:
+	docker compose -f infrastucture/docker-compose.yaml build --no-cache
+
 run:
 	docker compose -f infrastucture/docker-compose.yaml up -d
 

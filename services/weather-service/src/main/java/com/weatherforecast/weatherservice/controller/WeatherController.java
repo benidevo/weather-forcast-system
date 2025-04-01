@@ -25,7 +25,7 @@ public class WeatherController {
     @GetMapping("/weather")
     public Mono<ResponseEntity<WeatherData>> getWeather(
             @RequestParam(value = "lat") Double latitude,
-            @RequestParam(value = "log") Double longitude) {
+            @RequestParam(value = "lon") Double longitude) {
 
         if (latitude == null || longitude == null) {
             log.error("Latitude and Longitude must be provided");

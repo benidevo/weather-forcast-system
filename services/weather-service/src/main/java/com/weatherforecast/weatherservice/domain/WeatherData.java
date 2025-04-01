@@ -6,6 +6,8 @@ import lombok.*;
 @Data
 @Builder
 public class WeatherData {
+  private Double latitude;
+  private Double longitude;
   private String timezone;
   private String timezoneOffset;
   private String description;

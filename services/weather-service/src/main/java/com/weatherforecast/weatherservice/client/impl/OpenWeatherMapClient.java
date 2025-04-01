@@ -21,68 +21,72 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class OpenWeatherMapClient implements WeatherApiClient {
 
-    private final WebClient webClient;
-    private final String apiKey;
-    private final CircuitBreaker circuitBreaker;
+        private final WebClient webClient;
+        private final String apiKey;
+        private final CircuitBreaker circuitBreaker;
 
-    public OpenWeatherMapClient(
-            WebClient openWeatherMapWebClient,
-            @Value("${openweathermap.api.key}") String apiKey,
-            CircuitBreakerRegistry circuitBreakerRegistry) {
-        this.webClient = openWeatherMapWebClient;
-        this.apiKey = apiKey;
-        this.circuitBreaker = circuitBreakerRegistry.circuitBreaker("openWeatherMap");
-    }
+        public OpenWeatherMapClient(
+                        WebClient openWeatherMapWebClient,
+                        @Value("${openweathermap.api.key}") String apiKey,
+                        CircuitBreakerRegistry circuitBreakerRegistry) {
+                this.webClient = openWeatherMapWebClient;
+                this.apiKey = apiKey;
+                this.circuitBreaker = circuitBreakerRegistry.circuitBreaker("openWeatherMap");
+        }
 
-    @Override
-    public Mono<WeatherData> getWeatherData(Double latitude, Double longitude) {
-        log.info("Fetching current weather for latitude: {} and longitude: {}", latitude, longitude);
+        @Override
+        public Mono<WeatherData> getWeatherData(Double latitude, Double longitude) {
+                log.info("Fetching current weather for latitude: {} and longitude: {}", latitude, longitude);
 
-        var weatherDataDto = webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/data/3.0/onecall")
-                        .queryParam("lat", latitude)
-                        .queryParam("lon", longitude)
-                        .queryParam("appid", apiKey)
-                        .queryParam("units", "metric")
-                        .build())
-                .retrieve()
-                .bodyToMono(WeatherDataDto.class)
-                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
-                .doOnSuccess(result -> log.info("Successfully fetched current weather for: {}", latitude, longitude))
-                .doOnError(error -> log.error("Error fetching current weather for {}: {}", latitude, longitude, error.getMessage()));
+                var weatherDataDto = webClient.get()
+                                .uri(uriBuilder -> uriBuilder
+                                                .path("/data/3.0/onecall")
+                                                .queryParam("lat", latitude)
+                                                .queryParam("lon", longitude)
+                                                .queryParam("appid", apiKey)
+                                                .queryParam("units", "metric")
+                                                .build())
+                                .retrieve()
+                                .bodyToMono(WeatherDataDto.class)
+                                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
+                                .doOnSuccess(result -> log.info("Successfully fetched current weather for: {}",
+                                                latitude, longitude))
+                                .doOnError(error -> log.error("Error fetching current weather for {}: {}", latitude,
+                                                longitude, error.getMessage()));
 
-        return mapWeatherData(weatherDataDto);
-    }
+                return mapWeatherData(weatherDataDto);
+        }
 
-    private Mono<WeatherData> mapWeatherData(Mono<WeatherDataDto> weatherDataDto) {
-        return weatherDataDto.map(dto -> WeatherData.builder()
-                .timezone(dto.getTimezone())
-                .timezoneOffset(String.valueOf(dto.getTimezone_offset()))
-                .description(dto.getCurrent().getWeather().get(0).getDescription())
-                .temperature(dto.getCurrent().getTemp())
-                .feelsLike(dto.getCurrent().getFeels_like())
-                .pressure(dto.getCurrent().getPressure().doubleValue())
-                .humidity(dto.getCurrent().getHumidity())
-                .windSpeed(dto.getCurrent().getWind_speed())
-                .forecast(dto.getDaily().stream()
-                        .map(daily -> Forecast.builder()
-                                .description(daily.getWeather().get(0).getDescription())
-                                .temperature(daily.getTemp().getDay())
-                                .feelsLike(daily.getFeels_like().getDay())
-                                .pressure(daily.getPressure().doubleValue())
-                                .humidity(daily.getHumidity())
-                                .windSpeed(daily.getWind_speed())
-                                .build())
-                        .collect(Collectors.toList()))
-                .alerts(dto.getAlerts() != null ? dto.getAlerts().stream()
-                        .map(alert -> Alert.builder()
-                                .name(alert.getSender_name())
-                                .description(alert.getDescription())
-                                .startTime(String.valueOf(alert.getStart()))
-                                .endTime(String.valueOf(alert.getEnd()))
-                                .build())
-                        .collect(Collectors.toList()) : null)
-                .build());
-    }
+        private Mono<WeatherData> mapWeatherData(Mono<WeatherDataDto> weatherDataDto) {
+                return weatherDataDto.map(dto -> WeatherData.builder()
+                                .latitude(dto.getLat())
+                                .longitude(dto.getLon())
+                                .timezone(dto.getTimezone())
+                                .timezoneOffset(String.valueOf(dto.getTimezone_offset()))
+                                .description(dto.getCurrent().getWeather().get(0).getDescription())
+                                .temperature(dto.getCurrent().getTemp())
+                                .feelsLike(dto.getCurrent().getFeels_like())
+                                .pressure(dto.getCurrent().getPressure().doubleValue())
+                                .humidity(dto.getCurrent().getHumidity())
+                                .windSpeed(dto.getCurrent().getWind_speed())
+                                .forecast(dto.getDaily().stream()
+                                                .map(daily -> Forecast.builder()
+                                                                .description(daily.getWeather().get(0).getDescription())
+                                                                .temperature(daily.getTemp().getDay())
+                                                                .feelsLike(daily.getFeels_like().getDay())
+                                                                .pressure(daily.getPressure().doubleValue())
+                                                                .humidity(daily.getHumidity())
+                                                                .windSpeed(daily.getWind_speed())
+                                                                .build())
+                                                .collect(Collectors.toList()))
+                                .alerts(dto.getAlerts() != null ? dto.getAlerts().stream()
+                                                .map(alert -> Alert.builder()
+                                                                .name(alert.getSender_name())
+                                                                .description(alert.getDescription())
+                                                                .startTime(String.valueOf(alert.getStart()))
+                                                                .endTime(String.valueOf(alert.getEnd()))
+                                                                .build())
+                                                .collect(Collectors.toList()) : null)
+                                .build());
+        }
 }
