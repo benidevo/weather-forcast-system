@@ -6,7 +6,7 @@ services:
     container_name: weather-service
     ports:
     - "8080:8080"
-    - "9090:9090"
+    - "9090:6565"
     - "35729:35729"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
