@@ -5,8 +5,9 @@ services:
       dockerfile: infrastucture/docker/dev/weather-service/Dockerfile
     container_name: weather-service
     ports:
-      - "8080:8080"
-      - "35729:35729"
+    - "8080:8080"
+    - "9090:9090"
+    - "35729:35729"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_DEVTOOLS_RESTART_ENABLED=true

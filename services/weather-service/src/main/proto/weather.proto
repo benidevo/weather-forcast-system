@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package com.weatherforecast.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.weatherforecast.weatherservice.grpc";
+option java_outer_classname = "WeatherServiceProto";
+
+service WeatherService {
+  rpc GetWeatherData(CoordinatesRequest) returns (WeatherDataResponse) {}
+}
+
+message CoordinatesRequest {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+message WeatherDataResponse {
+  double latitude = 1;
+  double longitude = 2;
+  string timezone = 3;
+  string timezone_offset = 4;
+  string description = 5;
+  double temperature = 6;
+  double feels_like = 7;
+  double pressure = 8;
+  int32 humidity = 9;
+  double wind_speed = 10;
+  repeated ForecastData forecast = 11;
+  repeated AlertData alerts = 12;
+}
+
+message ForecastData {
+  string description = 1;
+  double temperature = 2;
+  double feels_like = 3;
+  double pressure = 4;
+  int32 humidity = 5;
+  double wind_speed = 6;
+}
+
+message AlertData {
+  string name = 1;
+  string description = 2;
+  string start_time = 3;
+  string end_time = 4;
+}
