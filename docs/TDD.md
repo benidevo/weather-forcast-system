@@ -63,11 +63,6 @@ The Weather Forecast System (WFS) will be built as a microservices architecture 
    - Role-based authorization
    - Security policy enforcement
 
-6. **Notification Service** (future expansion)
-   - Weather alerts
-   - Subscription management
-   - Push notification delivery
-
 ## 2. Technology Stack
 
 ### 2.1 Core Technologies
@@ -141,19 +136,16 @@ The Weather Forecast System (WFS) will be built as a microservices architecture 
 ### 4.1 External APIs
 
 1. **Weather API**
-   - GET `/api/v1/weather/current/{locationId}`
-   - GET `/api/v1/weather/forecast/hourly/{locationId}`
-   - GET `/api/v1/weather/forecast/daily/{locationId}`
-   - GET `/api/v1/weather/historical/{locationId}`
+   - GET `/api/v1/weather?lat={lat}&lon={lon}`
 
 2. **Location API**
    - GET `/api/v1/locations/search?q={query}`
-   - GET `/api/v1/locations/{locationId}`
 
 3. **User API**
    - GET `/api/v1/users/me`
    - GET `/api/v1/users/me/locations`
    - POST `/api/v1/users/me/locations`
+   - DELETE `/api/v1/users/me/locations/{location_id}`
 
 4. **Auth API**
    - POST `/api/v1/auth/register`
@@ -209,74 +201,36 @@ The Weather Forecast System (WFS) will be built as a microservices architecture 
 - Caching strategies to reduce dependency on external services
 - Graceful degradation during partial outages
 
-### 6.3 Caching Strategy
+## 7. Deployment Architecture
 
-- Multi-level caching (in-memory, distributed)
-- TTL-based invalidation based on data type
-- Cache-aside pattern for database access
-- Proactive cache warming for popular locations
-
-## 7. Monitoring and Observability
-
-### 7.1 Metrics Collection
-
-- Service health indicators
-- Request latency and throughput
-- Cache hit/miss ratios
-- External API availability
-- Error rates and types
-
-### 7.2 Logging Strategy
-
-- Structured logging with correlation IDs
-- Log aggregation with ELK stack
-- Log levels properly configured per environment
-- Transaction tracing across services
-
-## 8. Deployment Architecture
-
-### 8.1 CI/CD Pipeline
+### 7.1 CI/CD Pipeline
 
 - Automated testing (unit, integration, contract)
 - Continuous integration with GitHub Actions
 
-### 8.2 Container Strategy
+### 7.2 Container Strategy
 
 - Docker containers for all services
 - Docker Compose for local development
 - Kubernetes for production orchestration
 
-### 8.3 Environment Strategy
+### 7.3 Environment Strategy
 
 - Local development environment
 - Production environment
 
-## 9. Testing Strategy
+## 8. Testing Strategy
 
-### 9.1 Testing Levels
+### 8.1 Testing Levels
 
 - Unit tests for business logic
 - Integration tests for service interactions
 - Contract tests for API boundaries
 - End-to-end tests for critical flows
-- Performance tests for latency requirements
 
-### 9.2 Testing Tools and Frameworks
+### 8.2 Testing Tools and Frameworks
 
 - JUnit 5 for unit and integration tests
 - Mockito for mocking dependencies
 - TestContainers for integration testing with real databases
 - Spring Boot Test for application context testing
-- JMeter for performance testing
-
-## 10. Scaling Considerations
-
-### 10.1 Horizontal Scaling
-
-- Stateless services for easy replication
-- Caching to reduce database load
-
-### 10.2 Performance Optimization
-
-- Query optimization
-- Asynchronous processing where applicable
