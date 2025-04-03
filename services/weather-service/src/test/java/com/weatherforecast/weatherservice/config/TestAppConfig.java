@@ -9,9 +9,10 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weatherforecast.weatherservice.domain.WeatherData;
+import com.weatherforecast.weatherservice.grpc.GrpcWeatherServiceImpl;
 
 @TestConfiguration
-public class TestConfig {
+public class TestAppConfig {
     @Bean
     @Primary
     public ReactiveRedisConnectionFactory reactiveRedisConnectionFactory() {
@@ -20,8 +21,15 @@ public class TestConfig {
 
     @Bean
     @Primary
+    public GrpcWeatherServiceImpl grpcWeatherService() {
+        return Mockito.mock(GrpcWeatherServiceImpl.class);
+    }
+
+    @Bean
+    @Primary
+    @SuppressWarnings("unchecked")
     public ReactiveRedisTemplate<String, WeatherData> weatherDataRedisTemplate(ReactiveRedisConnectionFactory factory,
             ObjectMapper objectMapper) {
-        return Mockito.mock(ReactiveRedisTemplate.class);
+        return Mockito.mock(ReactiveRedisTemplate.class, Mockito.withSettings().defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
     }
 }

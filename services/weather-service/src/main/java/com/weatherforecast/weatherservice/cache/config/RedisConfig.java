@@ -35,8 +35,7 @@ public class RedisConfig {
     @Bean
     public ReactiveRedisTemplate<String, WeatherData> weatherDataRedisTemplate(
             ReactiveRedisConnectionFactory factory, ObjectMapper objectMapper) {
-        Jackson2JsonRedisSerializer<WeatherData> serializer = new Jackson2JsonRedisSerializer<>(WeatherData.class);
-        serializer.setObjectMapper(objectMapper);
+        Jackson2JsonRedisSerializer<WeatherData> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, WeatherData.class);
 
         RedisSerializationContext<String, WeatherData> serializationContext = RedisSerializationContext
                 .<String, WeatherData>newSerializationContext(new StringRedisSerializer())

@@ -19,7 +19,10 @@ stop-volumes:
 enter-weather-service:
 	docker compose -f infrastucture/docker-compose.yaml exec weather-service bash
 
+test-weather-service:
+	docker compose -f infrastucture/docker-compose.yaml exec weather-service bash -c "cd /app && ./mvnw test"
+
 format-weather-service:
 	docker compose -f infrastucture/docker-compose.yaml exec weather-service bash -c "cd /app && ./mvnw checkstyle:check"
 
-.PHONY: build run run-it stop stop-volumes enter-weather-service format-weather-service
+.PHONY: build run run-it stop stop-volumes enter-weather-service format-weather-service test-weather-service

@@ -1,14 +1,11 @@
 package com.weatherforecast.weatherservice.cache.impl;
 
-// import com.weatherforecast.weatherservice.cache.WeatherCacheRepository;
-import com.weatherforecast.weatherservice.config.TestConfig;
 import com.weatherforecast.weatherservice.domain.WeatherData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveValueOperations;
 import reactor.core.publisher.Mono;
@@ -20,7 +17,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@Import(TestConfig.class)
 public class RedisWeatherCacheRepositoryTest {
 
     @Mock
@@ -39,16 +35,13 @@ public class RedisWeatherCacheRepositoryTest {
 
     @Test
     void shouldSaveWeatherDataToRedis() {
-        // Given
         WeatherData weatherData = createSampleWeatherData();
         String expectedCacheKey = "weather:12.3400:45.6700";
         when(valueOperations.set(eq(expectedCacheKey), eq(weatherData), any(Duration.class)))
                 .thenReturn(Mono.just(Boolean.TRUE));
 
-        // When
         Mono<Void> result = repository.save(weatherData);
 
-        // Then
         StepVerifier.create(result)
                 .expectComplete()
                 .verify();
@@ -58,7 +51,6 @@ public class RedisWeatherCacheRepositoryTest {
 
     @Test
     void shouldFindWeatherDataByCoordinates() {
-        // Given
         Double latitude = 12.34;
         Double longitude = 45.67;
         String expectedCacheKey = "weather:12.3400:45.6700";
@@ -67,10 +59,8 @@ public class RedisWeatherCacheRepositoryTest {
         when(valueOperations.get(eq(expectedCacheKey)))
                 .thenReturn(Mono.just(expectedWeatherData));
 
-        // When
         Mono<WeatherData> result = repository.findByCoordinates(latitude, longitude);
 
-        // Then
         StepVerifier.create(result)
                 .expectNext(expectedWeatherData)
                 .expectComplete()
@@ -81,7 +71,6 @@ public class RedisWeatherCacheRepositoryTest {
 
     @Test
     void shouldReturnEmptyWhenCacheMiss() {
-        // Given
         Double latitude = 12.34;
         Double longitude = 45.67;
         String expectedCacheKey = "weather:12.3400:45.6700";
@@ -89,10 +78,8 @@ public class RedisWeatherCacheRepositoryTest {
         when(valueOperations.get(eq(expectedCacheKey)))
                 .thenReturn(Mono.empty());
 
-        // When
         Mono<WeatherData> result = repository.findByCoordinates(latitude, longitude);
 
-        // Then
         StepVerifier.create(result)
                 .expectComplete()
                 .verify();
@@ -102,7 +89,6 @@ public class RedisWeatherCacheRepositoryTest {
 
     @Test
     void shouldGenerateCacheKeyWithCorrectFormat() {
-        // Given
         Double latitude = 12.3456;
         Double longitude = 45.6789;
         String expectedCacheKey = "weather:12.3456:45.6789";
@@ -110,10 +96,8 @@ public class RedisWeatherCacheRepositoryTest {
         when(valueOperations.get(eq(expectedCacheKey)))
                 .thenReturn(Mono.empty());
 
-        // When
         repository.findByCoordinates(latitude, longitude);
 
-        // Then
         verify(valueOperations).get(eq(expectedCacheKey));
     }
 
@@ -133,5 +117,4 @@ public class RedisWeatherCacheRepositoryTest {
 
         return weatherData;
     }
-
 }
