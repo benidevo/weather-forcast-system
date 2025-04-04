@@ -26,10 +26,10 @@ public class OpenWeatherMapClient implements WeatherApiClient {
         private final CircuitBreaker circuitBreaker;
 
         public OpenWeatherMapClient(
-                        WebClient openWeatherMapWebClient,
+                        WebClient webClient,
                         @Value("${openweathermap.api.key}") String apiKey,
                         CircuitBreakerRegistry circuitBreakerRegistry) {
-                this.webClient = openWeatherMapWebClient;
+                this.webClient = webClient;
                 this.apiKey = apiKey;
                 this.circuitBreaker = circuitBreakerRegistry.circuitBreaker("openWeatherMap");
         }

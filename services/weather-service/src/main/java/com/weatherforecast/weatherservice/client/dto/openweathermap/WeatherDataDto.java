@@ -18,6 +18,7 @@ public class WeatherDataDto {
     private List<Alert> alerts;
 
     @Data
+    @Builder
     public static class CurrentWeather {
         private Long dt;
         private Long sunrise;
@@ -37,12 +38,14 @@ public class WeatherDataDto {
     }
 
     @Data
+    @Builder
     public static class MinutelyWeather {
         private Long dt;
         private Double precipitation;
     }
 
     @Data
+    @Builder
     public static class HourlyWeather {
         private Long dt;
         private Double temp;
@@ -61,6 +64,7 @@ public class WeatherDataDto {
     }
 
     @Data
+    @Builder
     public static class DailyWeather {
         private Long dt;
         private Long sunrise;
@@ -85,6 +89,7 @@ public class WeatherDataDto {
     }
 
     @Data
+    @Builder
     public static class Temperature {
         private Double day;
         private Double min;
@@ -95,6 +100,7 @@ public class WeatherDataDto {
     }
 
     @Data
+    @Builder
     public static class FeelsLike {
         private Double day;
         private Double night;
@@ -103,6 +109,7 @@ public class WeatherDataDto {
     }
 
     @Data
+    @Builder
     public static class Weather {
         private Long id;
         private String main;
@@ -111,6 +118,7 @@ public class WeatherDataDto {
     }
 
     @Data
+    @Builder
     public static class Alert {
         private String sender_name;
         private String event;
