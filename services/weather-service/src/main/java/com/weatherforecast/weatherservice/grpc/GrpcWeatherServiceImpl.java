@@ -33,4 +33,23 @@ public class GrpcWeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImp
                             responseObserver.onError(error);
                         });
     }
+
+    @Override
+    public void getWeatherDataByLocation(LocationRequest request,
+            StreamObserver<WeatherDataResponse> responseObserver) {
+        log.info("Received gRPC request for location: {}", request.getLocation());
+        weatherService.getWeatherData(request.getLocation())
+                .subscribe(
+                        weatherData -> {
+                            WeatherDataResponse response = Adapter.toGrpcResponse(weatherData);
+                            responseObserver.onNext(response);
+                            responseObserver.onCompleted();
+                            log.info("Successfully responded to gRPC request for weather data");
+                        },
+                        error -> {
+                            log.error("Error occurred while processing gRPC request: {}", error.getMessage());
+                            responseObserver.onError(error);
+                        });
+
+    }
 }

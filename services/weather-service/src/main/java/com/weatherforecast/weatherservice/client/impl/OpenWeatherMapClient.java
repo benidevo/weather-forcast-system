@@ -69,7 +69,8 @@ public class OpenWeatherMapClient implements WeatherApiClient {
                                                 .queryParam("appid", apiKey)
                                                 .build())
                                 .retrieve()
-                                .bodyToMono(LocationDto.class)
+                                .bodyToFlux(LocationDto.class)
+                                .next()
                                 .doOnSuccess(result -> log.info("Successfully retrieved coordinates for: {}", location))
                                 .doOnError(error -> log.error("Error retrieving coordinates for {}: {}", location,
                                                 error.getMessage()));
@@ -139,11 +140,13 @@ public class OpenWeatherMapClient implements WeatherApiClient {
         /**
          * Maps a LocationDto wrapped in a Mono to a Coordinates object.
          *
-         * This method extracts latitude and longitude values from the provided LocationDto
+         * This method extracts latitude and longitude values from the provided
+         * LocationDto
          * and creates a new Coordinates object with these values.
          *
          * @param locationDto the Mono containing the LocationDto to be mapped
-         * @return a Mono containing a Coordinates object with the extracted latitude and longitude
+         * @return a Mono containing a Coordinates object with the extracted latitude
+         *         and longitude
          */
         private Mono<Coordinates> mapCoordinates(Mono<LocationDto> locationDto) {
 

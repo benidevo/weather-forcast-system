@@ -8,6 +8,11 @@ option java_outer_classname = "WeatherServiceProto";
 
 service WeatherService {
   rpc GetWeatherData(CoordinatesRequest) returns (WeatherDataResponse) {}
+  rpc GetWeatherDataByLocation(LocationRequest) returns (WeatherDataResponse) {}
+}
+
+message LocationRequest {
+  string location = 1;
 }
 
 message CoordinatesRequest {

@@ -64,4 +64,7 @@ public class Adapter {
         return new double[] { request.getLatitude(), request.getLongitude() };
     }
 
+    public static String fromGrpcRequest(LocationRequest request) {
+        return request.getLocation();
+    }
 }
