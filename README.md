@@ -8,18 +8,16 @@ This system retrieves, processes, and serves weather data from third-party provi
 
 ## Architecture
 
-The Weather Forecast System consists of several services:
+The Weather Forecast System consists of 2 services:
 
 - **Weather Service**: Core service for retrieving and processing weather data
-- **Location Service**: Handles geocoding and location management
-- **User Service**: Manages user profiles and preferences
 - **Auth Service**: Handles authentication and authorization
 
 ## Technology Stack
 
 - **Language**: Java 17
 - **Framework**: Spring Boot 3.x
-- **Database**: PostgreSQL with PostGIS extension
+- **Database**: PostgreSQL
 - **Caching**: Redis
 - **Containerization**: Docker
 - **Service Discovery**: Spring Cloud Netflix Eureka
@@ -38,8 +36,8 @@ The Weather Forecast System consists of several services:
 1. Clone the repository:
 
    ```
-   git clone https://github.com/benidevo/weather-forecast-service.git
-   cd weather-forecast-service.
+   git clone https://github.com/benidevo/weather-forecast-system.git
+   cd weather-forecast-system
    ```
 
 2. Build and start the services:
@@ -49,6 +47,7 @@ The Weather Forecast System consists of several services:
    ```
 
 3. Access the weather service at <http://localhost:8080>
+4. Access the auth service at <http://localhost:8081>
 
 ## Project Structure
 
