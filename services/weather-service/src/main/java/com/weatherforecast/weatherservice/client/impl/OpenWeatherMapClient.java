@@ -6,10 +6,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.stream.Collectors;
 
 import com.weatherforecast.weatherservice.client.WeatherApiClient;
+import com.weatherforecast.weatherservice.client.dto.openweathermap.LocationDto;
 import com.weatherforecast.weatherservice.client.dto.openweathermap.WeatherDataDto;
 import com.weatherforecast.weatherservice.domain.WeatherData;
 import com.weatherforecast.weatherservice.domain.Forecast;
 import com.weatherforecast.weatherservice.domain.Alert;
+import com.weatherforecast.weatherservice.domain.Coordinates;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -57,6 +59,50 @@ public class OpenWeatherMapClient implements WeatherApiClient {
                 return mapWeatherData(weatherDataDto);
         }
 
+        public Mono<Coordinates> getCoordinates(String location) {
+                log.info("Retrieving coordinates for location: {}", location);
+                var locationDto = webClient.get()
+                                .uri(uriBuilder -> uriBuilder
+                                                .path("/geo/1.0/direct")
+                                                .queryParam("q", location)
+                                                .queryParam("limit", 1)
+                                                .queryParam("appid", apiKey)
+                                                .build())
+                                .retrieve()
+                                .bodyToMono(LocationDto.class)
+                                .doOnSuccess(result -> log.info("Successfully retrieved coordinates for: {}", location))
+                                .doOnError(error -> log.error("Error retrieving coordinates for {}: {}", location,
+                                                error.getMessage()));
+
+                return mapCoordinates(locationDto);
+
+        }
+
+        /**
+         * Maps the Open Weather Map API response data to the application's domain
+         * model.
+         *
+         * <p>
+         * This method transforms a {@link Mono<WeatherDataDto>} received from the
+         * OpenWeatherMap API
+         * into a {@link Mono<WeatherData>} object used within the application. The
+         * transformation includes
+         * mapping basic geographic data, current weather conditions, daily forecasts,
+         * and any weather alerts
+         * that might be present in the API response.
+         * </p>
+         *
+         * <p>
+         * If no alerts are present in the API response, the alerts field in the
+         * resulting
+         * {@link WeatherData} object will be set to null.
+         * </p>
+         *
+         * @param weatherDataDto a Mono containing the DTO received from the
+         *                       OpenWeatherMap API
+         * @return a Mono containing the transformed domain model object with weather
+         *         information
+         */
         private Mono<WeatherData> mapWeatherData(Mono<WeatherDataDto> weatherDataDto) {
                 return weatherDataDto.map(dto -> WeatherData.builder()
                                 .latitude(dto.getLat())
@@ -87,6 +133,23 @@ public class OpenWeatherMapClient implements WeatherApiClient {
                                                                 .endTime(String.valueOf(alert.getEnd()))
                                                                 .build())
                                                 .collect(Collectors.toList()) : null)
+                                .build());
+        }
+
+        /**
+         * Maps a LocationDto wrapped in a Mono to a Coordinates object.
+         *
+         * This method extracts latitude and longitude values from the provided LocationDto
+         * and creates a new Coordinates object with these values.
+         *
+         * @param locationDto the Mono containing the LocationDto to be mapped
+         * @return a Mono containing a Coordinates object with the extracted latitude and longitude
+         */
+        private Mono<Coordinates> mapCoordinates(Mono<LocationDto> locationDto) {
+
+                return locationDto.map(dto -> Coordinates.builder()
+                                .latitude(dto.getLat())
+                                .longitude(dto.getLon())
                                 .build());
         }
 }
