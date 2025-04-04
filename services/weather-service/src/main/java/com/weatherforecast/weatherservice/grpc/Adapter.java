@@ -59,12 +59,4 @@ public class Adapter {
 
         return responseBuilder.build();
     }
-
-    public static double[] fromGrpcRequest(CoordinatesRequest request) {
-        return new double[] { request.getLatitude(), request.getLongitude() };
-    }
-
-    public static String fromGrpcRequest(LocationRequest request) {
-        return request.getLocation();
-    }
 }
