@@ -13,6 +13,7 @@ ENV SPRING_DEVTOOLS_RESTART_ENABLED=true
 ENV SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
 
 EXPOSE 8080
+EXPOSE 6565
 
 CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-XX:TieredStopAtLevel=1 -Dspring.devtools.restart.enabled=true"]
 
