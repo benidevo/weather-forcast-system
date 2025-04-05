@@ -8,10 +8,11 @@ This system retrieves, processes, and serves weather data from third-party provi
 
 ## Architecture
 
-The Weather Forecast System consists of 2 services:
+The Weather Forecast System consists of 3 services:
 
 - **Weather Service**: Core service for retrieving and processing weather data
 - **Auth Service**: Handles authentication and authorization
+- **Gateway Service**: Acts as an API gateway and entry point for clients
 
 ## Technology Stack
 
@@ -43,17 +44,16 @@ The Weather Forecast System consists of 2 services:
 2. Build and start the services:
 
    ```
-   docker-compose -f infrastucture/docker-compose.yaml up -d
+   docker-compose -f infrastructure/docker-compose.yaml up -d
    ```
 
-3. Access the weather service at <http://localhost:8080>
-4. Access the auth service at <http://localhost:8081>
+3. Access the api: <http://localhost:8080>
 
 ## Project Structure
 
 ```
 ├── docs/                  # Documentation
-├── infrastucture/         # Docker and deployment configuration
+├── infrastructure/         # Docker and deployment configuration
 ├── services/              # Microservices
 │   ├── weather-service/   # Weather data service
 │   └── ...                # Other services
