@@ -34,9 +34,9 @@ public class WeatherServiceImpl implements WeatherService {
                                         .thenReturn(weatherData)))
                 .doOnSuccess(weatherData -> {
                     if (weatherData != null) {
-                        System.out.println("Weather data retrieved: " + weatherData);
+                        log.info("Weather data retrieved: {}", weatherData);
                     } else {
-                        System.out.println("No weather data found.");
+                        log.info("No weather data found.");
                     }
                 })
                 .doOnError(error -> log.error("Error retrieving weather data: {}", error.getMessage()))

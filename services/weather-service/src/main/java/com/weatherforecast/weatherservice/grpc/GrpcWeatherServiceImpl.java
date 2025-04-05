@@ -4,6 +4,7 @@ import org.lognet.springboot.grpc.GRpcService;
 
 import com.weatherforecast.weatherservice.service.WeatherService;
 
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +31,9 @@ public class GrpcWeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImp
                         },
                         error -> {
                             log.error("Error occurred while processing gRPC request: {}", error.getMessage());
-                            responseObserver.onError(error);
+                            responseObserver.onError(Status.INTERNAL
+                                    .withDescription("Something went wrong")
+                                    .asRuntimeException());
                         });
     }
 
@@ -48,7 +51,9 @@ public class GrpcWeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImp
                         },
                         error -> {
                             log.error("Error occurred while processing gRPC request: {}", error.getMessage());
-                            responseObserver.onError(error);
+                            responseObserver.onError(Status.INTERNAL
+                                    .withDescription("Something went wrong")
+                                    .asRuntimeException());
                         });
 
     }
