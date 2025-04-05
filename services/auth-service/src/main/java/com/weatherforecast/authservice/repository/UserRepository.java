@@ -1,5 +1,7 @@
 package com.weatherforecast.authservice.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Find a user by username.
      *
      * @param username the username of the user
-     * @return the user with the given username, or null if no such user exists
+     * @return an Optional containing the user if found, or empty if not found
      */
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 }

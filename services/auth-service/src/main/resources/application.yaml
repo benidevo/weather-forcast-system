@@ -8,7 +8,7 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate.ddl-auto: validate
+    hibernate.ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   devtools:
     restart:
@@ -19,3 +19,8 @@ spring:
       exclude: static/**,public/**
     livereload:
       enabled: true
+app:
+  jwt:
+    secret-key: ${JWT_SECRET:change_this_in_production_use_env_variable}
+    token-validity-in-seconds: 3600
+    refresh-token-validity-in-seconds: 86400
