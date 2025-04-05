@@ -10,9 +10,10 @@ public interface AuthService {
      *
      * @param username the username of the user
      * @param password the password of the user
-     * @return an AuthToken if authentication is successful, empty otherwise
+     * @return an AuthToken containing the authentication result and token if
+     *         successful
      */
-    Optional<AuthToken> authenticate(String username, String password);
+    AuthToken authenticate(String username, String password);
 
     /**
      * Register a new user with the given username and password.

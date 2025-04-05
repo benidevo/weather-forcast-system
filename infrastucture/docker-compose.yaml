@@ -48,6 +48,7 @@ services:
     container_name: auth-service
     ports:
       - "8081:8080"
+      - "9091:6565"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_DEVTOOLS_RESTART_ENABLED=true

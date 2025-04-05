@@ -29,16 +29,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Optional<AuthToken> authenticate(String username, String password) {
+    public AuthToken authenticate(String username, String password) {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             log.warn("User with username {} not found", username);
-            return Optional.empty();
+            return AuthToken.builder()
+                    .success(Boolean.FALSE)
+                    .build();
         }
 
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
             log.warn("Invalid password for user with username {}", username);
-            return Optional.empty();
+            return AuthToken.builder()
+                    .success(Boolean.FALSE)
+                    .build();
         }
         var validatedUser = user.get();
         AuthToken authToken = jwtService.generateToken(validatedUser);
@@ -46,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(validatedUser);
 
         log.info("User with username {} authenticated successfully", username);
-        return Optional.of(authToken);
+        return  authToken ;
     }
 
     @Override

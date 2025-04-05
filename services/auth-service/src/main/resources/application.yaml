@@ -21,6 +21,10 @@ spring:
       enabled: true
 app:
   jwt:
-    secret-key: ${JWT_SECRET:change_this_in_production_use_env_variable}
+    secret-key: ${JWT_SECRET}
     token-validity-in-seconds: 3600
-    refresh-token-validity-in-seconds: 86400
+
+grpc:
+  security:
+    auth:
+      enabled: false

@@ -18,15 +18,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
-
 @Service
 public class JwtServiceImpl implements JwtService {
     @Value("${app.jwt.secret-key}")
     private String secretKey;
     @Value("${app.jwt.token-validity-in-seconds}")
     private int tokenValidityInSeconds;
-    @Value("${app.jwt.refresh-token-validity-in-seconds}")
-    private int refreshTokenValidityInSeconds;
 
     @Override
     public AuthToken generateToken(User user) {
@@ -34,12 +31,10 @@ public class JwtServiceImpl implements JwtService {
         LocalDateTime expiryDate = now.plusSeconds(tokenValidityInSeconds);
 
         String token = createToken(new HashMap<>(), user.getUsername());
-        String refreshToken = createRefreshToken(user.getUsername());
 
         return AuthToken.builder()
                 .success(Boolean.TRUE)
                 .token(token)
-                .refreshToken(refreshToken)
                 .expiresAt(expiryDate)
                 .build();
     }
@@ -49,15 +44,6 @@ public class JwtServiceImpl implements JwtService {
                 .subject(subject)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * tokenValidityInSeconds))
-                .signWith(getSigningKey())
-                .compact();
-    }
-
-    private String createRefreshToken(String subject) {
-        return Jwts.builder()
-                .subject(subject)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * refreshTokenValidityInSeconds))
                 .signWith(getSigningKey())
                 .compact();
     }

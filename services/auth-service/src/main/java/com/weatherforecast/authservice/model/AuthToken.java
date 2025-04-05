@@ -10,6 +10,5 @@ import lombok.Data;
 public class AuthToken {
     private boolean success;
     private String token;
-    private String refreshToken;
     private LocalDateTime expiresAt;
 }
