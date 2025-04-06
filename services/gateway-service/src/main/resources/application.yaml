@@ -15,3 +15,12 @@ logging:
   level:
     org.springframework.cloud.gateway: INFO
     reactor.netty: INFO
+
+grpc:
+  client:
+    auth-service:
+      address: auth-service:6565
+      negotiationType: plaintext
+    weather-service:
+      address: weather-service:6565
+      negotiationType: plaintext

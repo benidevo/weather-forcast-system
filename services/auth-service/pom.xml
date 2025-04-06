@@ -185,6 +185,7 @@
 							<goal>compile</goal>
 							<goal>compile-custom</goal>
 						</goals>
+						<phase>generate-sources</phase>
 					</execution>
 				</executions>
 			</plugin>
