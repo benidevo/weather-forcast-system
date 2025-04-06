@@ -52,7 +52,13 @@ public class JwtServiceImplTest {
     SecretKey verificationKey = Keys.hmacShaKeyFor(keyBytes);
 
     String tokenString = token.getToken();
-    String username = Jwts.parserBuilder().setSigningKey(verificationKey).build().parseClaimsJwt(tokenString).getBody().getSubject();
+    String username =
+        Jwts.parserBuilder()
+            .setSigningKey(verificationKey)
+            .build()
+            .parseClaimsJwt(tokenString)
+            .getBody()
+            .getSubject();
 
     assertEquals("testuser", username);
   }

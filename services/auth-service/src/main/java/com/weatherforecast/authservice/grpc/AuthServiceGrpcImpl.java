@@ -3,7 +3,6 @@ package com.weatherforecast.authservice.grpc;
 import com.weatherforecast.authservice.model.AuthToken;
 import com.weatherforecast.authservice.service.AuthService;
 import com.weatherforecast.authservice.service.JwtService;
-
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
@@ -132,8 +131,7 @@ public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
 
   @Override
   public void validateToken(
-    TokenValidationRequest request,
-      StreamObserver<TokenValidationResponse> responseObserver) {
+      TokenValidationRequest request, StreamObserver<TokenValidationResponse> responseObserver) {
     String token = request.getToken();
 
     try {
@@ -150,6 +148,5 @@ public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
       responseObserver.onNext(response);
       responseObserver.onCompleted();
     }
-    }
-
+  }
 }
