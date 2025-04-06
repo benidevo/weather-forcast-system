@@ -2,6 +2,8 @@ package com.weatherforecast.authservice.grpc;
 
 import com.weatherforecast.authservice.model.AuthToken;
 import com.weatherforecast.authservice.service.AuthService;
+import com.weatherforecast.authservice.service.JwtService;
+
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +13,11 @@ import org.lognet.springboot.grpc.GRpcService;
 @Slf4j
 public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
   private final AuthService authService;
+  private final JwtService jwtService;
 
-  public AuthServiceGrpcImpl(AuthService authService) {
+  public AuthServiceGrpcImpl(AuthService authService, JwtService jwtService) {
     this.authService = authService;
+    this.jwtService = jwtService;
   }
 
   @Override
@@ -125,4 +129,27 @@ public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
           Status.INTERNAL.withDescription("Something went wrong").asRuntimeException());
     }
   }
+
+  @Override
+  public void validateToken(
+    TokenValidationRequest request,
+      StreamObserver<TokenValidationResponse> responseObserver) {
+    String token = request.getToken();
+
+    try {
+      jwtService.validateToken(token);
+      TokenValidationResponse response =
+          TokenValidationResponse.newBuilder().setValid(true).build();
+      responseObserver.onNext(response);
+      log.info("Token validation successful for token {}", token);
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      log.error("Token validation failed for token {}: {}", token, e.getMessage());
+      TokenValidationResponse response =
+          TokenValidationResponse.newBuilder().setValid(false).build();
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+    }
+    }
+
 }

@@ -11,4 +11,12 @@ public interface JwtService {
    * @return the generated JWT token
    */
   public AuthToken generateToken(User user);
+
+  /**
+   * Validates the given JWT token.
+   *
+   * @param token the JWT token to validate
+   * @return true if the token is valid, false otherwise
+   */
+  public boolean validateToken(String token);
 }

@@ -12,6 +12,8 @@ service AuthService {
     rpc Register(RegisterRequest) returns (RegistrationResponse) {}
     rpc UpdateUsername(UpdateUsernameRequest) returns (UpdateResponse) {}
     rpc UpdatePassword(UpdatePasswordRequest) returns (UpdateResponse) {}
+
+    rpc validateToken(TokenValidationRequest) returns (TokenValidationResponse) {}
 }
 
 
@@ -48,4 +50,13 @@ message RegistrationResponse {
 
 message UpdateResponse {
     bool success = 1;
+}
+
+message TokenValidationRequest {
+    string token = 1;
+}
+
+message TokenValidationResponse {
+    bool valid = 1;
+    string username = 2;
 }

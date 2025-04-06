@@ -34,11 +34,21 @@ public class JwtServiceImpl implements JwtService {
 
   private String createToken(Map<String, Object> claims, String subject) {
     return Jwts.builder()
-        .subject(subject)
-        .issuedAt(new Date())
-        .expiration(new Date(System.currentTimeMillis() + 1000 * tokenValidityInSeconds))
+        .setSubject(subject)
+        .setIssuedAt(new Date())
+        .setExpiration(new Date(System.currentTimeMillis() + 1000 * tokenValidityInSeconds))
         .signWith(getSigningKey())
         .compact();
+  }
+
+  @Override
+  public boolean validateToken(String token) {
+    try {
+      Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   private SecretKey getSigningKey() {

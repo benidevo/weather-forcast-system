@@ -5,23 +5,28 @@ import com.weatherforecast.authservice.grpc.AuthServiceGrpc;
 import com.weatherforecast.authservice.grpc.LoginRequest;
 import com.weatherforecast.authservice.grpc.RegisterRequest;
 import com.weatherforecast.authservice.grpc.RegistrationResponse;
+import com.weatherforecast.authservice.grpc.TokenValidationRequest;
+import com.weatherforecast.authservice.grpc.TokenValidationResponse;
 import com.weatherforecast.gatewayservice.dto.grpc.AuthDataDto;
 import com.weatherforecast.gatewayservice.grpc.AuthServiceGrpcClient;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import jakarta.annotation.PreDestroy;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
 public class AuthServiceGrpcClientImpl implements AuthServiceGrpcClient {
   private ManagedChannel channel;
   private AuthServiceGrpc.AuthServiceBlockingStub stub;
+  private AuthServiceGrpc.AuthServiceStub asyncStub;
   private final int channelTerminationTimeout = 5;
 
   public AuthServiceGrpcClientImpl(
@@ -29,6 +34,7 @@ public class AuthServiceGrpcClientImpl implements AuthServiceGrpcClient {
     log.info("Creating gRPC channel to auth service at address: {}", address);
     this.channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
     this.stub = AuthServiceGrpc.newBlockingStub(channel);
+    this.asyncStub = AuthServiceGrpc.newStub(channel);
   }
 
   @PreDestroy
@@ -84,6 +90,43 @@ public class AuthServiceGrpcClientImpl implements AuthServiceGrpcClient {
       log.warn("Registration failed for username: {}, error: {}", username, e.getMessage());
       return false;
     }
+  }
+
+  @Override
+  public Mono<Boolean> isAuthenticated(String token) {
+    log.info("Sending authentication check request to auth service for token: {}", token);
+
+    return Mono.create(
+        sink -> {
+          TokenValidationRequest request =
+              TokenValidationRequest.newBuilder().setToken(token).build();
+
+          asyncStub
+              .withDeadlineAfter(channelTerminationTimeout, TimeUnit.SECONDS)
+              .validateToken(
+                  request,
+                  new StreamObserver<TokenValidationResponse>() {
+                    @Override
+                    public void onNext(TokenValidationResponse response) {
+                      log.info("Authentication check processed for token: {}", token);
+                      sink.success(response.getValid());
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                      log.warn(
+                          "Authentication check failed for token: {}, error: {}",
+                          token,
+                          t.getMessage());
+                      sink.success(false);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                      log.info("Completed authentication check for token: {}", token);
+                    }
+                  });
+        });
   }
 
   private AuthDataDto mapGrpcAuthResponseToDto(AuthResponse response) {

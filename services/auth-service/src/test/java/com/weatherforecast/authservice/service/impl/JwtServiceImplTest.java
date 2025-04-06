@@ -51,13 +51,8 @@ public class JwtServiceImplTest {
     byte[] keyBytes = Decoders.BASE64.decode(secretKey);
     SecretKey verificationKey = Keys.hmacShaKeyFor(keyBytes);
 
-    String username =
-        Jwts.parser()
-            .verifyWith(verificationKey)
-            .build()
-            .parseSignedClaims(token.getToken())
-            .getPayload()
-            .getSubject();
+    String tokenString = token.getToken();
+    String username = Jwts.parserBuilder().setSigningKey(verificationKey).build().parseClaimsJwt(tokenString).getBody().getSubject();
 
     assertEquals("testuser", username);
   }
