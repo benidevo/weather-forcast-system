@@ -1,6 +1,6 @@
 package com.weatherforecast.gatewayservice.controllers;
 
-import com.weatherforecast.gatewayservice.dto.ResponseDto;
+import com.weatherforecast.gatewayservice.dto.http.WeatherResponseDto;
 import com.weatherforecast.gatewayservice.grpc.WeatherServiceGrpcClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +18,17 @@ public class WeatherController {
   @Autowired private WeatherServiceGrpcClient weatherServiceGrpcClient;
 
   @GetMapping
-  public Mono<ResponseEntity<ResponseDto>> getMethodName(
+  public Mono<ResponseEntity<WeatherResponseDto>> getMethodName(
       @RequestParam(required = false) Double lat,
       @RequestParam(required = false) Double lon,
       @RequestParam(required = false) String city) {
 
-    ResponseEntity<ResponseDto> response;
+    ResponseEntity<WeatherResponseDto> response;
     if (lat == null && lon == null && city == null) {
       response =
           ResponseEntity.badRequest()
               .body(
-                  ResponseDto.builder()
+                  WeatherResponseDto.builder()
                       .success(false)
                       .message("Please provide either lat and lon or city.")
                       .build());
@@ -41,7 +41,7 @@ public class WeatherController {
       response =
           ResponseEntity.badRequest()
               .body(
-                  ResponseDto.builder()
+                  WeatherResponseDto.builder()
                       .success(false)
                       .message("Please provide either lat and lon or city.")
                       .build());
@@ -55,7 +55,7 @@ public class WeatherController {
               data ->
                   ResponseEntity.ok()
                       .body(
-                          ResponseDto.builder()
+                          WeatherResponseDto.builder()
                               .success(true)
                               .message("Weather data fetched successfully.")
                               .data(data)
@@ -68,7 +68,7 @@ public class WeatherController {
             data ->
                 ResponseEntity.ok()
                     .body(
-                        ResponseDto.builder()
+                        WeatherResponseDto.builder()
                             .success(true)
                             .message("Weather data fetched successfully.")
                             .data(data)

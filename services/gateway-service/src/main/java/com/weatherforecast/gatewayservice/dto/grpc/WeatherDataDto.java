@@ -1,4 +1,4 @@
-package com.weatherforecast.gatewayservice.dto;
+package com.weatherforecast.gatewayservice.dto.grpc;
 
 import java.util.List;
 import lombok.Builder;

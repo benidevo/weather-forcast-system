@@ -1,6 +1,6 @@
 package com.weatherforecast.gatewayservice.grpc;
 
-import com.weatherforecast.gatewayservice.dto.WeatherDataDto;
+import com.weatherforecast.gatewayservice.dto.grpc.WeatherDataDto;
 import reactor.core.publisher.Mono;
 
 public interface WeatherServiceGrpcClient {

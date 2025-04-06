@@ -1,14 +1,13 @@
 package com.weatherforecast.gatewayservice.grpc.impl;
 
-import com.weatherforecast.gatewayservice.dto.WeatherDataDto;
-import com.weatherforecast.gatewayservice.dto.WeatherDataDto.Alert;
-import com.weatherforecast.gatewayservice.dto.WeatherDataDto.Forecast;
+import com.weatherforecast.gatewayservice.dto.grpc.WeatherDataDto;
+import com.weatherforecast.gatewayservice.dto.grpc.WeatherDataDto.Alert;
+import com.weatherforecast.gatewayservice.dto.grpc.WeatherDataDto.Forecast;
 import com.weatherforecast.gatewayservice.grpc.WeatherServiceGrpcClient;
 import com.weatherforecast.weatherservice.grpc.CoordinatesRequest;
 import com.weatherforecast.weatherservice.grpc.LocationRequest;
 import com.weatherforecast.weatherservice.grpc.WeatherDataResponse;
 import com.weatherforecast.weatherservice.grpc.WeatherServiceGrpc;
-
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator;
 import io.grpc.ManagedChannel;
@@ -32,7 +31,8 @@ public class WeatherServiceGrpcClientImpl implements WeatherServiceGrpcClient {
   private CircuitBreaker circuitBreaker;
 
   public WeatherServiceGrpcClientImpl(
-      @Value("${grpc.client.weather-service.address}") String address, CircuitBreaker circuitBreaker) {
+      @Value("${grpc.client.weather-service.address}") String address,
+      CircuitBreaker circuitBreaker) {
     log.info("Creating gRPC channel to weather service at address: {}", address);
     this.channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
     this.asyncStub = WeatherServiceGrpc.newStub(channel);
@@ -62,39 +62,42 @@ public class WeatherServiceGrpcClientImpl implements WeatherServiceGrpcClient {
   @Override
   public Mono<WeatherDataDto> getWeatherData(String location) {
     return Mono.<WeatherDataDto>create(
-        sink -> {
-          LocationRequest request = LocationRequest.newBuilder().setLocation(location).build();
+            sink -> {
+              LocationRequest request = LocationRequest.newBuilder().setLocation(location).build();
 
-          asyncStub
-              .withDeadlineAfter(channelTerminationTimeout, TimeUnit.SECONDS)
-              .getWeatherDataByLocation(
-                  request,
-                  new StreamObserver<WeatherDataResponse>() {
-                    @Override
-                    public void onNext(WeatherDataResponse response) {
-                      log.info("Received weather data for location: {}", location);
-                      sink.success(mapGrpcResponseToDto(response));
-                    }
+              asyncStub
+                  .withDeadlineAfter(channelTerminationTimeout, TimeUnit.SECONDS)
+                  .getWeatherDataByLocation(
+                      request,
+                      new StreamObserver<WeatherDataResponse>() {
+                        @Override
+                        public void onNext(WeatherDataResponse response) {
+                          log.info("Received weather data for location: {}", location);
+                          sink.success(mapGrpcResponseToDto(response));
+                        }
 
-                    @Override
-                    public void onError(Throwable t) {
-                      log.error(
-                          "Error occurred while fetching weather data for location: {}",
-                          location,
-                          t);
-                      sink.error(t);
-                    }
+                        @Override
+                        public void onError(Throwable t) {
+                          log.error(
+                              "Error occurred while fetching weather data for location: {}",
+                              location,
+                              t);
+                          sink.error(t);
+                        }
 
-                    @Override
-                    public void onCompleted() {
-                      log.info("Completed fetching weather data for location: {}", location);
-                    }
-                  });
-        })
+                        @Override
+                        public void onCompleted() {
+                          log.info("Completed fetching weather data for location: {}", location);
+                        }
+                      });
+            })
         .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
         .onErrorResume(
             throwable -> {
-              log.error("Circuit breaker triggered while fetching weather data for location: {}", location, throwable);
+              log.error(
+                  "Circuit breaker triggered while fetching weather data for location: {}",
+                  location,
+                  throwable);
               return Mono.just(getFallbackWeatherData(location));
             });
   }
@@ -102,70 +105,79 @@ public class WeatherServiceGrpcClientImpl implements WeatherServiceGrpcClient {
   @Override
   public Mono<WeatherDataDto> getWeatherDataByCoordinates(double lat, double lon) {
     return Mono.<WeatherDataDto>create(
-        sink -> {
-          CoordinatesRequest request =
-              CoordinatesRequest.newBuilder().setLatitude(lat).setLongitude(lon).build();
+            sink -> {
+              CoordinatesRequest request =
+                  CoordinatesRequest.newBuilder().setLatitude(lat).setLongitude(lon).build();
 
-          asyncStub
-              .withDeadlineAfter(channelTerminationTimeout, TimeUnit.SECONDS)
-              .getWeatherData(
-                  request,
-                  new StreamObserver<WeatherDataResponse>() {
-                    @Override
-                    public void onNext(WeatherDataResponse response) {
-                      log.info("Received weather data for coordinates: lat: {}, lon{}", lat, lon);
-                      sink.success(mapGrpcResponseToDto(response));
-                    }
+              asyncStub
+                  .withDeadlineAfter(channelTerminationTimeout, TimeUnit.SECONDS)
+                  .getWeatherData(
+                      request,
+                      new StreamObserver<WeatherDataResponse>() {
+                        @Override
+                        public void onNext(WeatherDataResponse response) {
+                          log.info(
+                              "Received weather data for coordinates: lat: {}, lon{}", lat, lon);
+                          sink.success(mapGrpcResponseToDto(response));
+                        }
 
-                    @Override
-                    public void onError(Throwable t) {
-                      log.error(
-                          "Error occurred while fetching weather data for coordinates: lat: {}, lon: {}",
-                          lat,
-                          lon,
-                          t);
-                      sink.error(t);
-                    }
+                        @Override
+                        public void onError(Throwable t) {
+                          log.error(
+                              "Error occurred while fetching weather data for coordinates: lat: {}, lon: {}",
+                              lat,
+                              lon,
+                              t);
+                          sink.error(t);
+                        }
 
-                    @Override
-                    public void onCompleted() {
-                      log.info(
-                          "Completed fetching weather data for coordinates: lat: {}, lon: {}",
-                          lat,
-                          lon);
-                    }
-                  });
-        })
+                        @Override
+                        public void onCompleted() {
+                          log.info(
+                              "Completed fetching weather data for coordinates: lat: {}, lon: {}",
+                              lat,
+                              lon);
+                        }
+                      });
+            })
         .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
         .onErrorResume(
             throwable -> {
-              log.error("Circuit breaker triggered while fetching weather data for coordinates: lat: {}, lon: {}", lat, lon, throwable);
+              log.error(
+                  "Circuit breaker triggered while fetching weather data for coordinates: lat: {}, lon: {}",
+                  lat,
+                  lon,
+                  throwable);
               return Mono.just(getFallbackWeatherDataByCoordinates(lat, lon));
             });
   }
 
   private WeatherDataDto mapGrpcResponseToDto(WeatherDataResponse grpcResponse) {
-    List<Alert> alerts = grpcResponse.getAlertsList().stream()
-        .map(
-            alertData -> Alert.builder()
-                .name(alertData.getName())
-                .description(alertData.getDescription())
-                .startTime(alertData.getStartTime())
-                .endTime(alertData.getEndTime())
-                .build())
-        .collect(Collectors.toList());
+    List<Alert> alerts =
+        grpcResponse.getAlertsList().stream()
+            .map(
+                alertData ->
+                    Alert.builder()
+                        .name(alertData.getName())
+                        .description(alertData.getDescription())
+                        .startTime(alertData.getStartTime())
+                        .endTime(alertData.getEndTime())
+                        .build())
+            .collect(Collectors.toList());
 
-    List<Forecast> forecasts = grpcResponse.getForecastList().stream()
-        .map(
-            forecastData -> Forecast.builder()
-                .description(forecastData.getDescription())
-                .temperature(forecastData.getTemperature())
-                .feelsLike(forecastData.getFeelsLike())
-                .pressure(forecastData.getPressure())
-                .humidity(forecastData.getHumidity())
-                .windSpeed(forecastData.getWindSpeed())
-                .build())
-        .collect(Collectors.toList());
+    List<Forecast> forecasts =
+        grpcResponse.getForecastList().stream()
+            .map(
+                forecastData ->
+                    Forecast.builder()
+                        .description(forecastData.getDescription())
+                        .temperature(forecastData.getTemperature())
+                        .feelsLike(forecastData.getFeelsLike())
+                        .pressure(forecastData.getPressure())
+                        .humidity(forecastData.getHumidity())
+                        .windSpeed(forecastData.getWindSpeed())
+                        .build())
+            .collect(Collectors.toList());
 
     return WeatherDataDto.builder()
         .latitude(grpcResponse.getLatitude())
