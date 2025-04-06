@@ -13,7 +13,7 @@ service AuthService {
     rpc UpdateUsername(UpdateUsernameRequest) returns (UpdateResponse) {}
     rpc UpdatePassword(UpdatePasswordRequest) returns (UpdateResponse) {}
 
-    rpc validateToken(TokenValidationRequest) returns (TokenValidationResponse) {}
+    rpc ValidateToken(TokenValidationRequest) returns (TokenValidationResponse) {}
 }
 
 
