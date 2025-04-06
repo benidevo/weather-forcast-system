@@ -2,7 +2,7 @@ services:
   gateway:
     build:
       context: ..
-      dockerfile: infrastructure/docker/dev/gateway-service/Dockerfile
+      dockerfile: infrastructure/docker/gateway-service/Dockerfile
     container_name: gateway
     ports:
       - "8080:8080"
@@ -27,7 +27,7 @@ services:
   weather-service:
     build:
       context: ..
-      dockerfile: infrastructure/docker/dev/weather-service/Dockerfile
+      dockerfile: infrastructure/docker/weather-service/Dockerfile
     container_name: weather-service
     ports:
     - "9090:6565"
@@ -65,7 +65,7 @@ services:
   auth-service:
     build:
       context: ..
-      dockerfile: infrastructure/docker/dev/auth-service/Dockerfile
+      dockerfile: infrastructure/docker/auth-service/Dockerfile
     container_name: auth-service
     ports:
       - "9091:6565"
