@@ -1,9 +1,9 @@
 package com.weatherforecast.gatewayservice.dto.grpc;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class AuthDataDto {
   @Builder.Default private boolean success = false;

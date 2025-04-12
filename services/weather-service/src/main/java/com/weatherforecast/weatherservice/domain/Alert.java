@@ -1,6 +1,7 @@
 package com.weatherforecast.weatherservice.domain;
 
-import lombok.*;
+import lombok.Data;
+import lombok.Builder;
 
 @Data
 @Builder

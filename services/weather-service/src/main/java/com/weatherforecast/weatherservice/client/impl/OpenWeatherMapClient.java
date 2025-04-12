@@ -20,7 +20,6 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 public class OpenWeatherMapClient implements WeatherApiClient {
-
   private final WebClient webClient;
   private final String apiKey;
   private final CircuitBreaker circuitBreaker;

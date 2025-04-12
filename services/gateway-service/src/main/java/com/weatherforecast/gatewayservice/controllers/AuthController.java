@@ -7,7 +7,6 @@ import com.weatherforecast.gatewayservice.dto.http.RegisterResponseDto;
 import com.weatherforecast.gatewayservice.grpc.AuthServiceGrpcClient;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-  @Autowired private AuthServiceGrpcClient authServiceGrpcClient;
+  private final AuthServiceGrpcClient authServiceGrpcClient;
+
+  public AuthController(AuthServiceGrpcClient service) {
+    this.authServiceGrpcClient = service;
+  }
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponseDto> login(

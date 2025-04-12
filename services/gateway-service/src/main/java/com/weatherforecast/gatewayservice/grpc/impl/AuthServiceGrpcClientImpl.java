@@ -24,14 +24,13 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Service
 public class AuthServiceGrpcClientImpl implements AuthServiceGrpcClient {
-  private ManagedChannel channel;
-  private AuthServiceGrpc.AuthServiceBlockingStub stub;
-  private AuthServiceGrpc.AuthServiceStub asyncStub;
-  private final int channelTerminationTimeout = 5;
+  private final ManagedChannel channel;
+  private final AuthServiceGrpc.AuthServiceBlockingStub stub;
+  private final AuthServiceGrpc.AuthServiceStub asyncStub;
+  private static final int channelTerminationTimeout = 5;
 
   public AuthServiceGrpcClientImpl(
       @Value("${grpc.client.auth-service.address}") String address, CircuitBreaker circuitBreaker) {
-    log.info("Creating gRPC channel to auth service at address: {}", address);
     this.channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
     this.stub = AuthServiceGrpc.newBlockingStub(channel);
     this.asyncStub = AuthServiceGrpc.newStub(channel);

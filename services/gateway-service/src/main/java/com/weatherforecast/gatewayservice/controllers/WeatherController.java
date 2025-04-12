@@ -3,7 +3,6 @@ package com.weatherforecast.gatewayservice.controllers;
 import com.weatherforecast.gatewayservice.dto.http.WeatherResponseDto;
 import com.weatherforecast.gatewayservice.grpc.WeatherServiceGrpcClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +14,11 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/weather")
 public class WeatherController {
-  @Autowired private WeatherServiceGrpcClient weatherServiceGrpcClient;
+    private final WeatherServiceGrpcClient weatherServiceGrpcClient;
+
+    public WeatherController(WeatherServiceGrpcClient service) {
+        this.weatherServiceGrpcClient = service;
+    }
 
   @GetMapping
   public Mono<ResponseEntity<WeatherResponseDto>> getMethodName(

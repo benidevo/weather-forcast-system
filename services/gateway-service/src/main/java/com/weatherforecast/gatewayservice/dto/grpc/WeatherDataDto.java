@@ -1,10 +1,11 @@
 package com.weatherforecast.gatewayservice.dto.grpc;
 
 import java.util.List;
+import java.util.ArrayList;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class WeatherDataDto {
   private Double latitude;
@@ -17,10 +18,12 @@ public class WeatherDataDto {
   private Double pressure;
   private Integer humidity;
   private Double windSpeed;
-  private List<Forecast> forecast;
-  private List<Alert> alerts;
+  @Builder.Default
+  private List<Forecast> forecast = new ArrayList<>();
+  @Builder.Default
+  private List<Alert> alerts = new ArrayList<>();
 
-  @Data
+  @Value
   @Builder
   public static class Forecast {
     private String description;
@@ -31,7 +34,7 @@ public class WeatherDataDto {
     private Double windSpeed;
   }
 
-  @Data
+  @Value
   @Builder
   public static class Alert {
     private String name;

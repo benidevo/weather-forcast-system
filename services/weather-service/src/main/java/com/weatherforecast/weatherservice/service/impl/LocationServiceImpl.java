@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@Service
 @Slf4j
+@Service
 public class LocationServiceImpl implements LocationService {
   private final WeatherApiClient weatherApiClient;
 

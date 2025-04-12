@@ -14,6 +14,8 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import jakarta.annotation.PreDestroy;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -27,13 +29,12 @@ import reactor.core.publisher.Mono;
 public class WeatherServiceGrpcClientImpl implements WeatherServiceGrpcClient {
   private final WeatherServiceGrpc.WeatherServiceStub asyncStub;
   private final ManagedChannel channel;
-  private final int channelTerminationTimeout = 5;
-  private CircuitBreaker circuitBreaker;
+  private static final int channelTerminationTimeout = 5;
+  private final CircuitBreaker circuitBreaker;
 
   public WeatherServiceGrpcClientImpl(
       @Value("${grpc.client.weather-service.address}") String address,
       CircuitBreaker circuitBreaker) {
-    log.info("Creating gRPC channel to weather service at address: {}", address);
     this.channel = ManagedChannelBuilder.forTarget(address).usePlaintext().build();
     this.asyncStub = WeatherServiceGrpc.newStub(channel);
     this.circuitBreaker = circuitBreaker;
@@ -202,8 +203,8 @@ public class WeatherServiceGrpcClientImpl implements WeatherServiceGrpcClient {
         .temperature(0.0)
         .humidity(0)
         .description("No data available")
-        .alerts(List.of())
-        .forecast(List.of())
+        .alerts(Collections.emptyList())
+        .forecast(Collections.emptyList())
         .build();
   }
 
@@ -217,8 +218,8 @@ public class WeatherServiceGrpcClientImpl implements WeatherServiceGrpcClient {
         .temperature(0.0)
         .humidity(0)
         .description("No data available")
-        .alerts(List.of())
-        .forecast(List.of())
+        .alerts(Collections.emptyList())
+        .forecast(Collections.emptyList())
         .build();
   }
 }
