@@ -14,11 +14,11 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/weather")
 public class WeatherController {
-    private final WeatherServiceGrpcClient weatherServiceGrpcClient;
+  private final WeatherServiceGrpcClient weatherServiceGrpcClient;
 
-    public WeatherController(WeatherServiceGrpcClient service) {
-        this.weatherServiceGrpcClient = service;
-    }
+  public WeatherController(WeatherServiceGrpcClient service) {
+    this.weatherServiceGrpcClient = service;
+  }
 
   @GetMapping
   public Mono<ResponseEntity<WeatherResponseDto>> getMethodName(

@@ -4,7 +4,6 @@ import com.weatherforecast.gatewayservice.dto.grpc.AuthDataDto;
 import lombok.Builder;
 import lombok.Value;
 
-
 @Value
 @Builder
 public class LoginResponseDto {

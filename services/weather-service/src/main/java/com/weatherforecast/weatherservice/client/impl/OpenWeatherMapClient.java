@@ -105,7 +105,7 @@ public class OpenWeatherMapClient implements WeatherApiClient {
    * @param weatherDataDto a Mono containing the DTO received from the OpenWeatherMap API
    * @return a Mono containing the transformed domain model object with weather information
    */
-  private Mono<WeatherData> mapWeatherData(Mono<WeatherDataDto> weatherDataDto) {
+  Mono<WeatherData> mapWeatherData(Mono<WeatherDataDto> weatherDataDto) {
     return weatherDataDto.map(
         dto ->
             WeatherData.builder()

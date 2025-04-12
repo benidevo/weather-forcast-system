@@ -13,7 +13,7 @@ import com.weatherforecast.weatherservice.domain.WeatherData;
  * ensuring proper data transformation while maintaining separation of concerns.
  */
 public class Adapter {
-  public static WeatherDataResponse toGrpcResponse(WeatherData weatherData) {
+  static WeatherDataResponse toGrpcResponse(WeatherData weatherData) {
     WeatherDataResponse.Builder responseBuilder =
         WeatherDataResponse.newBuilder()
             .setLatitude(weatherData.getLatitude())
